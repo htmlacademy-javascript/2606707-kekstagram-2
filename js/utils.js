@@ -12,4 +12,12 @@ const getRandomArrayItem = (items) => items[getRandomInteger(0, items.length - 1
 const createCustomLengthArray = (length = 0, callback = () => {}) =>
   Array.from({ length }, (_, i) => callback(i + 1));
 
-export { getRandomInteger, getRandomArrayItem, createCustomLengthArray };
+// Проверка, является ли нажатая клавиша Escape
+const isEscapeKey = (evt) => evt.key === 'Escape';
+
+// Переключение класса у элемента
+const toggleClass = (element, className) => {
+  element.classList.toggle(className);
+};
+
+export { getRandomInteger, getRandomArrayItem, createCustomLengthArray, isEscapeKey, toggleClass };
