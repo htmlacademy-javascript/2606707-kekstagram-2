@@ -13,7 +13,6 @@ const renderThumbnail = (thumbnail) => {
   thumbnailElement.querySelector('.picture__likes').textContent = thumbnail.likes;
   thumbnailElement.querySelector('.picture__comments').textContent = thumbnail.comments.length;
 
-  // Обработчик клика
   thumbnailElement.addEventListener('click', (evt) => {
     evt.preventDefault();
     openFullPhoto(thumbnail);

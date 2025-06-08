@@ -1,4 +1,6 @@
 import { toggleClass, isEscapeKey } from './utils.js';
+import { sendData } from './api.js';
+import { notification } from './notifications.js';
 
 const MAX_DESCRIPTION_LENGTH = 140;
 const MAX_HASHTAGS_COUNT = 5;
@@ -261,6 +263,8 @@ const closeUploadForm = () => {
     uploadForm.reset();
     pristine.reset();
     submitButton.disabled = true;
+    uploadInput.value = '';
+    previewImage.src = 'img/upload-default-image.jpg';
     updateScale(SCALE_DEFAULT);
     resetEffect();
     effectLevelContainer.style.display = 'none';
@@ -269,6 +273,7 @@ const closeUploadForm = () => {
 
 // Обработчик клавиши Escape
 const onUploadFormEscKeyDown = (evt) => {
+  evt.stopPropagation();
   if (isEscapeKey(evt) && document.activeElement !== hashtagsInput && document.activeElement !== descriptionInput) {
     closeUploadForm();
     document.removeEventListener('keydown', onUploadFormEscKeyDown);
@@ -300,7 +305,18 @@ const onDescriptionInput = () => {
 const onUploadFormSubmit = (evt) => {
   evt.preventDefault();
   if (pristine.validate()) {
-    uploadForm.submit();
+    submitButton.disabled = true;
+    sendData(new FormData(uploadForm))
+      .then(() => {
+        notification.success();
+        closeUploadForm();
+      })
+      .catch(() => {
+        notification.error();
+      })
+      .finally(() => {
+        submitButton.disabled = false;
+      });
   }
 };
 
@@ -313,6 +329,7 @@ const initUploadForm = () => {
   });
   uploadInput.addEventListener('change', () => {
     if (uploadInput.files.length > 0) {
+      previewImage.src = URL.createObjectURL(uploadInput.files[0]);
       openUploadForm();
     }
   });
