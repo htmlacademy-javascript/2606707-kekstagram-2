@@ -1,17 +1,23 @@
-
-import { addPhotos } from './data.js';
 import { renderThumbnails } from './render-thumbnails.js';
 import { initUploadForm } from './photo-upload-form.js';
+import { getData } from './api.js';
+import { notification } from './notifications.js';
 
+let photos = [];
 
-// Глобальный массив photos
-const photos = [];
+const onSuccess = (data) => {
+  photos = data.slice();
+  renderThumbnails(photos);
+  document.querySelector('.img-filters')?.classList.remove('img-filters--inactive');
+};
 
-// Заполняем массив photos
-addPhotos(photos);
+const onFail = () => {
+  notification.dataError({ message: 'Ошибка загрузки фотографий.' });
+};
 
-// Передаём заполненный массив в renderThumbnails
-renderThumbnails(photos);
+getData()
+  .then(onSuccess)
+  .catch(onFail);
 
-// Инициализируем форму загрузки
 initUploadForm();
+
