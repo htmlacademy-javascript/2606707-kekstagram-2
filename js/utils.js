@@ -6,4 +6,12 @@ const toggleClass = (element, className) => {
   element.classList.toggle(className);
 };
 
-export {isEscapeKey, toggleClass };
+const debounce = (callback, timeoutDelay) => {
+  let timeoutId;
+  return (...rest) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+};
+
+export {isEscapeKey, toggleClass, debounce};
