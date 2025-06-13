@@ -1,4 +1,4 @@
-import {debounce} from './utils.js';
+import { debounce } from './utils.js';
 
 const MAX_RANDOM_COUNT = 10;
 const RENDER_DELAY = 500;
@@ -29,10 +29,12 @@ let activeFilterElement = filtersContainerElement.querySelector('.img-filters__b
 
 let posts = [];
 
+// Очищает отрисованные миниатюры
 const clearThumbnails = () => {
   document.querySelectorAll('.picture').forEach((el) => el.remove());
 };
 
+// Применяет выбранный фильтр и отрисовывает фотографии
 const useFilter = (filterName, renderThumbnailsFunction) => {
   let sortFunction = filterFunctions.showDefault;
 
@@ -49,6 +51,7 @@ const useFilter = (filterName, renderThumbnailsFunction) => {
   renderThumbnailsFunction(sortFunction(posts));
 };
 
+// Обрабатывает клик по кнопкам фильтров
 const onFiltersContainerClick = (evt, renderThumbnailsFunction) => {
   const targetFilterElement = evt.target.closest('.img-filters__button');
 
@@ -61,6 +64,7 @@ const onFiltersContainerClick = (evt, renderThumbnailsFunction) => {
   }
 };
 
+// Инициализирует фильтры и установливает обработчики
 const initFilters = (data, renderThumbnailsFunction) => {
   posts = data;
   const renderThumbnailsDebounced = debounce(renderThumbnailsFunction, RENDER_DELAY);
