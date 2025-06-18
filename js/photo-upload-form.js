@@ -123,6 +123,7 @@ const pristine = new Pristine(uploadForm, {
   errorTextClass: 'form-error'
 });
 
+// Применяет эффект к изображению
 const applyEffect = () => {
   const selectedEffectName = effectsList.querySelector('.effects__radio:checked').value;
   const effect = effects.find((eff) => eff.name === selectedEffectName);
@@ -134,10 +135,11 @@ const applyEffect = () => {
     const value = effectLevelSlider.noUiSlider.get();
     previewImage.style.filter = effect.setFilter(value);
     effectLevelContainer.style.display = 'block';
-    effectLevelValue.value = Number(value).toFixed(1);
+    effectLevelValue.value = parseFloat(value) % 1 === 0 ? parseInt(value, 10) : parseFloat(value).toFixed(1);
   }
 };
 
+// Сбрасывает настройки эффекта
 const resetEffect = () => {
   const selectedEffectName = effectsList.querySelector('.effects__radio:checked').value;
   const effect = effects.find((eff) => eff.name === selectedEffectName);
@@ -151,6 +153,7 @@ const resetEffect = () => {
   }
 };
 
+// Инициализирует слайдер эффектов
 const initSlider = () => {
   if (effectLevelSlider && !effectLevelSlider.noUiSlider) {
     noUiSlider.create(effectLevelSlider, {
@@ -171,11 +174,13 @@ const initSlider = () => {
   }
 };
 
+// Обновляет масштаб изображения
 const updateScale = (scale) => {
   scaleValue.value = `${scale}%`;
   previewImage.style.transform = `scale(${scale / 100})`;
 };
 
+// Изменяет масштаб изображения
 const onScaleChange = (direction) => {
   let currentScale = parseInt(scaleValue.value, 10) || SCALE_DEFAULT;
   if (direction === 'smaller') {
@@ -246,11 +251,13 @@ const hashtagsHandler = (value) => {
 
 pristine.addValidator(hashtagsInput, hashtagsHandler, error, 2, false);
 
+// Переключает видимость формы загрузки
 const toggleUploadForm = () => {
   toggleClass(uploadOverlay, 'hidden');
   toggleClass(document.body, 'modal-open');
 };
 
+// Закрывает форму загрузки
 const closeUploadForm = () => {
   if (!uploadOverlay.classList.contains('hidden')) {
     toggleUploadForm();
@@ -265,6 +272,7 @@ const closeUploadForm = () => {
   }
 };
 
+// Обрабатывает нажатие клавиши Escape
 const onUploadFormEscKeyDown = (evt) => {
   evt.stopPropagation();
   if (isEscapeKey(evt) && document.activeElement !== hashtagsInput && document.activeElement !== descriptionInput) {
@@ -273,6 +281,7 @@ const onUploadFormEscKeyDown = (evt) => {
   }
 };
 
+// Открывает форму загрузки
 const openUploadForm = () => {
   if (uploadOverlay.classList.contains('hidden')) {
     toggleUploadForm();
@@ -285,14 +294,17 @@ const openUploadForm = () => {
   }
 };
 
+// Проверяет валидность хэштегов при вводе
 const onHashtagInput = () => {
   submitButton.disabled = !pristine.validate();
 };
 
+// Проверяет валидность описания при вводе
 const onDescriptionInput = () => {
   submitButton.disabled = !pristine.validate();
 };
 
+// Обрабатывает отправку формы
 const onUploadFormSubmit = (evt) => {
   evt.preventDefault();
   if (pristine.validate()) {
@@ -311,6 +323,7 @@ const onUploadFormSubmit = (evt) => {
   }
 };
 
+// Инициализирует форму загрузки
 const initUploadForm = () => {
   effectsList.addEventListener('change', (evt) => {
     if (evt.target.matches('.effects__radio')) {

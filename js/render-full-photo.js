@@ -52,17 +52,17 @@ const renderComments = () => {
 
   visibleComments = Math.min(visibleComments, currentComments.length);
 
-  // Рендерим комментарии
+  // Рендерит комментарии
   for (let i = 0; i < visibleComments; i++) {
     commentFragment.appendChild(renderComment(currentComments[i]));
   }
   commentsContainer.appendChild(commentFragment);
 
-  // Обновляем счётчики
+  // Обновляет счётчики
   socialCommentShownCount.textContent = String(visibleComments);
   socialCommentTotalCount.textContent = String(currentComments.length);
 
-  // Управляем видимостью кнопки "Загрузить ещё"
+  // Управляет видимостью кнопки "Загрузить ещё"
   loadButton.classList.toggle('hidden', visibleComments >= currentComments.length);
 };
 
