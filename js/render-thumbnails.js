@@ -3,8 +3,6 @@ import { openFullPhoto } from './render-full-photo.js';
 const thumbnailsContainer = document.querySelector('.pictures');
 const thumbnailTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
-const thumbnailsFragment = document.createDocumentFragment();
-
 const renderThumbnail = (thumbnail) => {
   const thumbnailElement = thumbnailTemplate.cloneNode(true);
 
@@ -22,9 +20,13 @@ const renderThumbnail = (thumbnail) => {
 };
 
 const renderThumbnails = (thumbnails) => {
+  thumbnailsContainer.querySelectorAll('.picture').forEach((element) => element.remove());
+  const thumbnailsFragment = document.createDocumentFragment();
+
   thumbnails?.forEach((thumbnail) => {
     thumbnailsFragment.appendChild(renderThumbnail(thumbnail));
   });
+
   thumbnailsContainer.appendChild(thumbnailsFragment);
 };
 

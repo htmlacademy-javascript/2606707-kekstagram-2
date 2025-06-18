@@ -4,11 +4,11 @@ import { notification } from './notifications.js';
 
 const MAX_DESCRIPTION_LENGTH = 140;
 const MAX_HASHTAGS_COUNT = 5;
+const FILE_TYPES = ['jpg', 'jpeg', 'png'];
+const HASHTAG_REGEX = /^#[a-zа-яё0-9]{1,19}$/i;
 
 const SCALE_STEP = 25;
-
 const SCALE_DEFAULT = 100;
-
 const EFFECT_DEFAULT_LEVEL = 100;
 
 const HashtagLengthLimits = {
@@ -113,6 +113,7 @@ const effectLevelContainer = uploadForm.querySelector('.img-upload__effect-level
 const effectLevelSlider = uploadForm.querySelector('.effect-level__slider');
 const effectLevelValue = uploadForm.querySelector('.effect-level__value');
 const effectsList = uploadForm.querySelector('.effects__list');
+const effectsPreviewElements = document.querySelectorAll('.effects__preview');
 
 const pristine = new Pristine(uploadForm, {
   classTo: 'img-upload__field-wrapper',
@@ -122,7 +123,6 @@ const pristine = new Pristine(uploadForm, {
   errorTextClass: 'form-error'
 });
 
-// Применение эффекта
 const applyEffect = () => {
   const selectedEffectName = effectsList.querySelector('.effects__radio:checked').value;
   const effect = effects.find((eff) => eff.name === selectedEffectName);
@@ -134,11 +134,10 @@ const applyEffect = () => {
     const value = effectLevelSlider.noUiSlider.get();
     previewImage.style.filter = effect.setFilter(value);
     effectLevelContainer.style.display = 'block';
-    effectLevelValue.value = value;
+    effectLevelValue.value = Number(value).toFixed(1);
   }
 };
 
-// Сброс эффекта
 const resetEffect = () => {
   const selectedEffectName = effectsList.querySelector('.effects__radio:checked').value;
   const effect = effects.find((eff) => eff.name === selectedEffectName);
@@ -152,13 +151,13 @@ const resetEffect = () => {
   }
 };
 
-// Инициализация слайдера noUiSlider
 const initSlider = () => {
-  if (effectLevelSlider) {
+  if (effectLevelSlider && !effectLevelSlider.noUiSlider) {
     noUiSlider.create(effectLevelSlider, {
       range: {
         min: 0,
-        max: 100 },
+        max: 100
+      },
       start: EFFECT_DEFAULT_LEVEL,
       step: 1,
       connect: 'lower'
@@ -172,7 +171,6 @@ const initSlider = () => {
   }
 };
 
-// Управление масштабом
 const updateScale = (scale) => {
   scaleValue.value = `${scale}%`;
   previewImage.style.transform = `scale(${scale / 100})`;
@@ -188,14 +186,12 @@ const onScaleChange = (direction) => {
   updateScale(currentScale);
 };
 
-// Валидация описания
 const validateDescription = (value) => value.length <= MAX_DESCRIPTION_LENGTH;
 
 const getDescriptionErrorMessage = () => `Длина описания не должна превышать ${MAX_DESCRIPTION_LENGTH} символов`;
 
 pristine.addValidator(descriptionInput, validateDescription, getDescriptionErrorMessage);
 
-// Валидация хэштегов
 const parseHashtags = (value) => value.toLowerCase().trim().split(/\s+/);
 
 let errorMessage = '';
@@ -228,7 +224,7 @@ const hashtagsHandler = (value) => {
       error: `Хэш-тег должен быть длиной от ${HashtagLengthLimits.MIN} до ${HashtagLengthLimits.MAX} символов`
     },
     {
-      check: (item) => !/^#[a-zа-яё0-9]{1,19}$/i.test(item),
+      check: (item) => !HASHTAG_REGEX.test(item),
       error: 'Хэш-тег содержит недопустимые символы'
     },
     {
@@ -250,13 +246,11 @@ const hashtagsHandler = (value) => {
 
 pristine.addValidator(hashtagsInput, hashtagsHandler, error, 2, false);
 
-// Переключение видимости формы
 const toggleUploadForm = () => {
   toggleClass(uploadOverlay, 'hidden');
   toggleClass(document.body, 'modal-open');
 };
 
-// Закрытие формы
 const closeUploadForm = () => {
   if (!uploadOverlay.classList.contains('hidden')) {
     toggleUploadForm();
@@ -271,7 +265,6 @@ const closeUploadForm = () => {
   }
 };
 
-// Обработчик клавиши Escape
 const onUploadFormEscKeyDown = (evt) => {
   evt.stopPropagation();
   if (isEscapeKey(evt) && document.activeElement !== hashtagsInput && document.activeElement !== descriptionInput) {
@@ -280,19 +273,18 @@ const onUploadFormEscKeyDown = (evt) => {
   }
 };
 
-// Открытие формы
 const openUploadForm = () => {
   if (uploadOverlay.classList.contains('hidden')) {
     toggleUploadForm();
     document.addEventListener('keydown', onUploadFormEscKeyDown);
     updateScale(SCALE_DEFAULT);
-    initSlider();
     resetEffect();
     effectLevelContainer.style.display = 'none';
+    pristine.reset();
+    submitButton.disabled = false;
   }
 };
 
-// Управление состоянием кнопки отправки
 const onHashtagInput = () => {
   submitButton.disabled = !pristine.validate();
 };
@@ -301,7 +293,6 @@ const onDescriptionInput = () => {
   submitButton.disabled = !pristine.validate();
 };
 
-// Обработчик отправки формы
 const onUploadFormSubmit = (evt) => {
   evt.preventDefault();
   if (pristine.validate()) {
@@ -320,7 +311,6 @@ const onUploadFormSubmit = (evt) => {
   }
 };
 
-// Инициализация формы
 const initUploadForm = () => {
   effectsList.addEventListener('change', (evt) => {
     if (evt.target.matches('.effects__radio')) {
@@ -329,7 +319,19 @@ const initUploadForm = () => {
   });
   uploadInput.addEventListener('change', () => {
     if (uploadInput.files.length > 0) {
-      previewImage.src = URL.createObjectURL(uploadInput.files[0]);
+      const file = uploadInput.files[0];
+      const fileName = file.name.toLowerCase();
+      const fileExtension = fileName.split('.').pop();
+      if (!FILE_TYPES.includes(fileExtension)) {
+        notification.error('Недопустимый формат файла. Используйте JPG, JPEG или PNG.');
+        uploadInput.value = '';
+        return;
+      }
+      const url = URL.createObjectURL(file);
+      previewImage.src = url;
+      effectsPreviewElements.forEach((preview) => {
+        preview.style.backgroundImage = `url(${url})`;
+      });
       openUploadForm();
     }
   });
@@ -342,9 +344,7 @@ const initUploadForm = () => {
   uploadForm.addEventListener('submit', onUploadFormSubmit);
 };
 
-initUploadForm();
-
 scaleSmaller.addEventListener('click', () => onScaleChange('smaller'));
 scaleBigger.addEventListener('click', () => onScaleChange('bigger'));
 
-export { initUploadForm };
+export { initUploadForm, initSlider };
