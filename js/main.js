@@ -1,5 +1,5 @@
 import { renderThumbnails } from './render-thumbnails.js';
-import { initUploadForm } from './photo-upload-form.js';
+import { initUploadForm, initSlider } from './photo-upload-form.js';
 import { getData } from './api.js';
 import { notification } from './notifications.js';
 import { initFilters } from './filters.js';
@@ -21,4 +21,6 @@ getData()
   .then(onSuccess)
   .catch(onFail);
 
+initSlider();
 initUploadForm();
+
