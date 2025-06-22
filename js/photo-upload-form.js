@@ -100,9 +100,9 @@ const uploadForm = document.querySelector('.img-upload__form');
 const uploadInput = uploadForm.querySelector('.img-upload__input');
 const uploadOverlay = uploadForm.querySelector('.img-upload__overlay');
 const closeButton = uploadForm.querySelector('.img-upload__cancel');
-const hashtagsInput = document.querySelector('.text__hashtags');
-const descriptionInput = document.querySelector('.text__description');
-const submitButton = document.querySelector('.img-upload__submit');
+const hashtagsInput = uploadForm.querySelector('.text__hashtags');
+const descriptionInput = uploadForm.querySelector('.text__description');
+const submitButton = uploadForm.querySelector('.img-upload__submit');
 
 const scaleSmaller = uploadForm.querySelector('.scale__control--smaller');
 const scaleBigger = uploadForm.querySelector('.scale__control--bigger');
@@ -113,7 +113,7 @@ const effectLevelContainer = uploadForm.querySelector('.img-upload__effect-level
 const effectLevelSlider = uploadForm.querySelector('.effect-level__slider');
 const effectLevelValue = uploadForm.querySelector('.effect-level__value');
 const effectsList = uploadForm.querySelector('.effects__list');
-const effectsPreviewElements = document.querySelectorAll('.effects__preview');
+const effectsPreviewElements = uploadForm.querySelectorAll('.effects__preview');
 
 const pristine = new Pristine(uploadForm, {
   classTo: 'img-upload__field-wrapper',
@@ -201,7 +201,7 @@ const parseHashtags = (value) => value.toLowerCase().trim().split(/\s+/);
 
 let errorMessage = '';
 
-const error = () => errorMessage;
+const getErrorMessage = () => errorMessage;
 
 const hashtagsHandler = (value) => {
   errorMessage = '';
@@ -249,7 +249,7 @@ const hashtagsHandler = (value) => {
   );
 };
 
-pristine.addValidator(hashtagsInput, hashtagsHandler, error, 2, false);
+pristine.addValidator(hashtagsInput, hashtagsHandler, getErrorMessage, 2, false);
 
 // Переключает видимость формы загрузки
 const toggleUploadForm = () => {
@@ -275,7 +275,12 @@ const closeUploadForm = () => {
 // Обрабатывает нажатие клавиши Escape
 const onUploadFormEscKeyDown = (evt) => {
   evt.stopPropagation();
-  if (isEscapeKey(evt) && document.activeElement !== hashtagsInput && document.activeElement !== descriptionInput) {
+  if (
+    isEscapeKey(evt) &&
+    document.activeElement !== hashtagsInput &&
+    document.activeElement !== descriptionInput &&
+    !document.querySelector('.error')
+  ) {
     closeUploadForm();
     document.removeEventListener('keydown', onUploadFormEscKeyDown);
   }

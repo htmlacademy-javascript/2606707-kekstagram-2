@@ -26,17 +26,17 @@ const showMessage = (templateSelector, config = {}) => {
   const close = () => {
     message?.remove();
     document.body.classList.remove('notification-open');
-    document.removeEventListener('keydown', onKeydown);
+    document.removeEventListener('keydown', onDocumentKeyDown);
   };
 
-  // Обрабатывает нажатие клавиши
-  function onKeydown(evt) {
+  // Обрабатывает нажатие клавиши на документе
+  function onDocumentKeyDown(evt) {
     if (isEscapeKey(evt)) {
       close();
     }
   }
 
-  document.addEventListener('keydown', onKeydown);
+  document.addEventListener('keydown', onDocumentKeyDown);
   message.addEventListener('click', (evt) => {
     if (evt.target === message || evt.target.matches(config.buttonSelector)) {
       close();
@@ -50,12 +50,15 @@ const showMessage = (templateSelector, config = {}) => {
 
 // Объект с методами для разных типов уведомлений
 const notification = {
+  // Показывает уведомление об ошибке данных
   dataError: (config = {}) => {
     showMessage('#data-error', { ...config, buttonSelector: '.data-error__title' });
   },
+  // Показывает уведомление об ошибке
   error: (config = {}) => {
     showMessage('#error', { ...config, buttonSelector: '.error__button' });
   },
+  // Показывает уведомление об успехе
   success: (config = {}) => {
     showMessage('#success', { ...config, buttonSelector: '.success__button' });
   },
