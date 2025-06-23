@@ -1,8 +1,8 @@
 import { renderThumbnails } from './render-thumbnails.js';
-import { initUploadForm, initSlider } from './photo-upload-form.js';
+import { initializeUploadForm, initializeSlider } from './photo-upload-form.js';
 import { getData } from './api.js';
 import { notification } from './notifications.js';
-import { initFilters } from './filters.js';
+import { initializeFilters } from './filters.js';
 
 let photos = [];
 
@@ -10,7 +10,7 @@ const onSuccess = (data) => {
   photos = data.slice();
   renderThumbnails(photos);
   document.querySelector('.img-filters')?.classList.remove('img-filters--inactive');
-  initFilters(photos, renderThumbnails);
+  initializeFilters(photos, renderThumbnails);
 };
 
 const onFail = () => {
@@ -21,6 +21,5 @@ getData()
   .then(onSuccess)
   .catch(onFail);
 
-initSlider();
-initUploadForm();
-
+initializeSlider();
+initializeUploadForm();

@@ -1,5 +1,5 @@
 
-import { debounce } from './utils.js';
+import { applyDebounce } from './utils.js';
 
 const MAX_RANDOM_COUNT = 10;
 const RENDER_DELAY = 500;
@@ -14,12 +14,12 @@ const filterFunctions = {
   showDefault: (photos) => photos.slice(),
   showRandom: (photos) => {
     const shuffled = photos.slice();
-    const result = [];
-    while (result.length < Math.min(MAX_RANDOM_COUNT, shuffled.length)) {
+    const results = [];
+    while (results.length < Math.min(MAX_RANDOM_COUNT, shuffled.length)) {
       const index = Math.floor(Math.random() * shuffled.length);
-      result.push(shuffled.splice(index, 1)[0]);
+      results.push(shuffled.splice(index, 1)[0]);
     }
-    return result;
+    return results;
   },
   showDiscussed: (photos) => photos.slice().sort((a, b) => b.comments.length - a.comments.length)
 };
@@ -53,7 +53,7 @@ const useFilter = (filterName, renderThumbnailsFunction) => {
 };
 
 // Обрабатывает клик по кнопкам фильтров
-const onFiltersContainerClick = (evt, renderThumbnailsFunction) => {
+const handleFiltersContainerClick = (evt, renderThumbnailsFunction) => {
   const targetFilterElement = evt.target.closest('.img-filters__button');
 
   if (targetFilterElement && targetFilterElement !== activeFilterElement) {
@@ -66,11 +66,11 @@ const onFiltersContainerClick = (evt, renderThumbnailsFunction) => {
 };
 
 // Инициализирует фильтры и установливает обработчики
-const initFilters = (data, renderThumbnailsFunction) => {
+const initializeFilters = (data, renderThumbnailsFunction) => {
   posts = data;
-  const renderThumbnailsDebounced = debounce(renderThumbnailsFunction, RENDER_DELAY);
-  filtersContainerElement.addEventListener('click', (evt) => onFiltersContainerClick(evt, renderThumbnailsDebounced));
+  const renderThumbnailsDebounced = applyDebounce(renderThumbnailsFunction, RENDER_DELAY);
+  filtersContainerElement.addEventListener('click', (evt) => handleFiltersContainerClick (evt, renderThumbnailsDebounced));
   renderThumbnailsFunction(data);
 };
 
-export { initFilters };
+export { initializeFilters };
