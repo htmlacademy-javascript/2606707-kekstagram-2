@@ -74,7 +74,7 @@ const show = ({ url, likes, description }) => {
   fullPhotoCaption.textContent = description || '';
 };
 
-const onLoadButtonClick = () => {
+const handleLoadButtonClick = () => {
   visibleComments += COMMENTS_PER_PAGE;
   renderComments();
 };
@@ -92,7 +92,7 @@ function closeFullPhoto() {
   toggleModal();
 }
 
-const onCloseButtonClick = () => {
+const handleCloseButtonClick = () => {
   closeFullPhoto();
 };
 
@@ -106,7 +106,7 @@ const openFullPhoto = (photoData) => {
   toggleModal();
 };
 
-closeButton.addEventListener('click', onCloseButtonClick);
-loadButton.addEventListener('click', onLoadButtonClick);
+closeButton.addEventListener('click', handleCloseButtonClick);
+loadButton.addEventListener('click', handleLoadButtonClick);
 
 export { openFullPhoto };

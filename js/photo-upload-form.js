@@ -154,7 +154,7 @@ const resetEffect = () => {
 };
 
 // Инициализирует слайдер эффектов
-const initSlider = () => {
+const initializeSlider = () => {
   if (effectLevelSlider && !effectLevelSlider.noUiSlider) {
     noUiSlider.create(effectLevelSlider, {
       range: {
@@ -181,7 +181,7 @@ const updateScale = (scale) => {
 };
 
 // Изменяет масштаб изображения
-const onScaleChange = (direction) => {
+const handleScaleChange = (direction) => {
   let currentScale = parseInt(scaleValue.value, 10) || SCALE_DEFAULT;
   if (direction === 'smaller') {
     currentScale = Math.max(currentScale - SCALE_STEP, ScaleValue.MIN);
@@ -203,7 +203,7 @@ let errorMessage = '';
 
 const getErrorMessage = () => errorMessage;
 
-const hashtagsHandler = (value) => {
+const handleHashtags = (value) => {
   errorMessage = '';
   if (!value || value.trim() === '') {
     return true;
@@ -249,7 +249,7 @@ const hashtagsHandler = (value) => {
   );
 };
 
-pristine.addValidator(hashtagsInput, hashtagsHandler, getErrorMessage, 2, false);
+pristine.addValidator(hashtagsInput, handleHashtags, getErrorMessage, 2, false);
 
 // Переключает видимость формы загрузки
 const toggleUploadForm = () => {
@@ -273,7 +273,7 @@ const closeUploadForm = () => {
 };
 
 // Обрабатывает нажатие клавиши Escape
-const onUploadFormEscKeyDown = (evt) => {
+const handleUploadFormEscKeyDown = (evt) => {
   evt.stopPropagation();
   if (
     isEscapeKey(evt) &&
@@ -282,7 +282,7 @@ const onUploadFormEscKeyDown = (evt) => {
     !document.querySelector('.error')
   ) {
     closeUploadForm();
-    document.removeEventListener('keydown', onUploadFormEscKeyDown);
+    document.removeEventListener('keydown', handleUploadFormEscKeyDown);
   }
 };
 
@@ -290,7 +290,7 @@ const onUploadFormEscKeyDown = (evt) => {
 const openUploadForm = () => {
   if (uploadOverlay.classList.contains('hidden')) {
     toggleUploadForm();
-    document.addEventListener('keydown', onUploadFormEscKeyDown);
+    document.addEventListener('keydown', handleUploadFormEscKeyDown);
     updateScale(SCALE_DEFAULT);
     resetEffect();
     effectLevelContainer.style.display = 'none';
@@ -300,17 +300,17 @@ const openUploadForm = () => {
 };
 
 // Проверяет валидность хэштегов при вводе
-const onHashtagInput = () => {
+const handleHashtagInput = () => {
   submitButton.disabled = !pristine.validate();
 };
 
 // Проверяет валидность описания при вводе
-const onDescriptionInput = () => {
+const handleDescriptionInput = () => {
   submitButton.disabled = !pristine.validate();
 };
 
 // Обрабатывает отправку формы
-const onUploadFormSubmit = (evt) => {
+const handleUploadFormSubmit = (evt) => {
   evt.preventDefault();
   if (pristine.validate()) {
     submitButton.disabled = true;
@@ -329,7 +329,7 @@ const onUploadFormSubmit = (evt) => {
 };
 
 // Инициализирует форму загрузки
-const initUploadForm = () => {
+const initializeUploadForm = () => {
   effectsList.addEventListener('change', (evt) => {
     if (evt.target.matches('.effects__radio')) {
       resetEffect();
@@ -353,16 +353,16 @@ const initUploadForm = () => {
       openUploadForm();
     }
   });
-  hashtagsInput.addEventListener('input', onHashtagInput);
-  descriptionInput.addEventListener('input', onDescriptionInput);
+  hashtagsInput.addEventListener('input', handleHashtagInput);
+  descriptionInput.addEventListener('input', handleDescriptionInput);
   closeButton.addEventListener('click', () => {
     closeUploadForm();
-    document.removeEventListener('keydown', onUploadFormEscKeyDown);
+    document.removeEventListener('keydown', handleUploadFormEscKeyDown);
   });
-  uploadForm.addEventListener('submit', onUploadFormSubmit);
+  uploadForm.addEventListener('submit', handleUploadFormSubmit);
 };
 
-scaleSmaller.addEventListener('click', () => onScaleChange('smaller'));
-scaleBigger.addEventListener('click', () => onScaleChange('bigger'));
+scaleSmaller.addEventListener('click', () => handleScaleChange('smaller'));
+scaleBigger.addEventListener('click', () => handleScaleChange('bigger'));
 
-export { initUploadForm, initSlider };
+export { initializeUploadForm, initializeSlider };
